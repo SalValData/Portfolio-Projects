@@ -1,0 +1,108 @@
+--i want to see american born hiv data 
+select year_reported, location, country_birth, cases
+from HivDemo
+where country_birth = 'Born in U.S., possessions or territories,  or not specified';
+
+--i'm curious to find which states have the highest records
+select year_reported, location, country_birth, MAX(cases) as HighestCaseCount
+from HivDemo
+where country_birth = 'Born in U.S., possessions or territories,  or not specified'
+group by location
+limit 10;
+
+---im curious to see where the area with the most cases are
+select location, MAX(cases) AS HighestCaseCount
+from HivDemo
+where country_birth = 'Born in U.S., possessions or territories,  or not specified'
+  and location like '%pediatric or not in MSA%'
+group by location
+order by HighestCaseCount desc
+limit 10;
+
+---curious to see the age and most common exposure type
+select HIV_Exposure_Category, age_diagnosis, SUM(Cases) AS TotalCases
+from HivExposure
+group by HIV_Exposure_Category
+order by TotalCases desc
+limit 5;
+
+---curious to see the most common exposure per age 
+select Age_Diagnosis, HIV_Exposure_Category, Cases
+from HivExposure h
+where Cases = (
+    select MAX(Cases)
+    from HivExposure
+    where Age_Diagnosis = h.Age_Diagnosis
+)
+order by Age_Diagnosis;
+
+---curious to join the tables and find the age along with the demos
+select d.Location,
+       d.Race_Ethnicity,
+       d.Country_Birth,
+       e.Age_Diagnosis
+from HivDemo d
+join HivExposure e
+    on d.Cases = e.Cases;
+    
+--temp table
+--im curious to see the states, general areas and most common exposure in that area
+
+drop table if exists HivSummary;
+ 
+create table HivSummary (
+    Location varchar(100),
+    Race_Ethnicity varchar(100),
+    Country_Birth varchar(200),
+    Age_Diagnosis varchar(50),
+    HIV_Exposure_Category varchar(100),
+    Cases INT
+);
+
+insert into HivSummary (
+    Location, Race_Ethnicity, Country_Birth, 
+    Age_Diagnosis, HIV_Exposure_Category, Cases)
+    
+select
+    d.Location,
+    d.Race_Ethnicity,
+    d.Country_Birth,
+    e.Age_Diagnosis,
+    e.HIV_Exposure_Category,
+    e.Cases
+from HivDemo d
+join HivExposure e
+    on d.Cases = e.Cases
+where d.Country_Birth = 'Born in U.S., possessions or territories,  or not specified';
+
+--i wanna see the data 
+select * from HivSummary limit 10;
+
+--cool, now i wanna see the max and the sums 
+select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCases
+from HivSummary
+group by Location, HIV_Exposure_Category
+order by Location, TotalCases DESC;
+
+--the same but general area instead 
+select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCasesPerArea
+from HivSummary
+where country_birth = 'Born in U.S., possessions or territories,  or not specified'
+    and location like '%pediatric or not in MSA%'
+group by Location
+order by TotalCasesPerArea desc;
+
+--create view to store later for visulization
+drop view if exists HivSummaryView;
+
+create view HivSummaryView as
+select 
+    Location,
+    SUM(Cases) AS TotalCases
+from HivSummary
+where Country_Birth = 'Born in U.S., possessions or territories,  or not specified'
+  and Location like '%pediatric or not in MSA%'
+group by Location
+order by TotalCases desc;
+
+select * from HivSummaryView;
