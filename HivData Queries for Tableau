@@ -5,6 +5,8 @@ where country_birth = 'Born in U.S., possessions or territories,  or not specifi
     and location like '%pediatric or not in MSA%'
 group by Location
 order by TotalCasesPerArea desc;
+select * from HivSummaryView;
+
 
 --i'm curious to find which states have the highest records
 select year_reported, location, country_birth, MAX(cases) as HighestCaseCount
