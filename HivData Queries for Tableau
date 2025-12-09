@@ -28,3 +28,12 @@ where Cases = (
     where Age_Diagnosis = h.Age_Diagnosis
 )
 order by Age_Diagnosis;
+
+--temp table, i wanna see the max and sums but for the general area instead 
+select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCasesPerArea
+from HivSummary
+where country_birth = 'Born in U.S., possessions or territories,  or not specified'
+    and location like '%pediatric or not in MSA%'
+group by Location
+order by TotalCasesPerArea desc;
+
