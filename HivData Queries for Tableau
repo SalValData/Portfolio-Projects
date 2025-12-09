@@ -1,13 +1,17 @@
---i want to see american born hiv data 
-select year_reported, location, country_birth, cases
-from HivDemo
-where country_birth = 'Born in U.S., possessions or territories,  or not specified';
+--temp table, i wanna see the max and sums but for the general area instead 
+select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCasesPerArea
+from HivSummary
+where country_birth = 'Born in U.S., possessions or territories,  or not specified'
+    and location like '%pediatric or not in MSA%'
+group by Location
+order by TotalCasesPerArea desc;
 
 --i'm curious to find which states have the highest records
 select year_reported, location, country_birth, MAX(cases) as HighestCaseCount
 from HivDemo
 where country_birth = 'Born in U.S., possessions or territories,  or not specified'
 group by location
+order by HighestCaseCount desc
 limit 10;
 
 ---im curious to see where the area with the most cases are
@@ -29,11 +33,4 @@ where Cases = (
 )
 order by Age_Diagnosis;
 
---temp table, i wanna see the max and sums but for the general area instead 
-select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCasesPerArea
-from HivSummary
-where country_birth = 'Born in U.S., possessions or territories,  or not specified'
-    and location like '%pediatric or not in MSA%'
-group by Location
-order by TotalCasesPerArea desc;
 
