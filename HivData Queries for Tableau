@@ -1,11 +1,4 @@
---temp table, i wanna see the sums for the general area (n,s,w etc) of us born hiv cases
-select Location, HIV_Exposure_Category, SUM(Cases) AS TotalCasesPerArea
-from HivSummary
-where country_birth = 'Born in U.S., possessions or territories,  or not specified'
-    and location like '%pediatric or not in MSA%'
-group by Location
-order by TotalCasesPerArea desc;
-select * from HivSummaryView;
+1)
 
 --i'm curious to find which specific us states have the highest records for us born hiv cases
 select year_reported, location, country_birth, MAX(cases) as HighestCaseCount
