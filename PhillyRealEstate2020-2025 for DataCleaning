@@ -74,6 +74,24 @@ HAVING COUNT(*) > 1;
 
 
 
+4)--a simplified clean table for quicker analysis   
+CREATE TABLE PhillyHousing_clean AS
+SELECT document_id,
+       document_type,
+       recording_date,
+       street_address,
+       zip_code,
+       ward,
+       grantors,
+       grantees,
+       ROUND(total_consideration, 2) AS sale_price,   -- 2 decimal places
+       ROUND(assessed_value, 2) AS assessed_value,
+       ROUND(fair_market_value, 2) AS fair_market_value,
+       ROUND(state_tax_amount, 2) AS state_tax_amount,
+       ROUND(local_tax_amount, 2) AS local_tax_amount,
+       ROUND(lat, 2) AS lat,   -- keep more precision for coordinates
+       ROUND(lng, 2) AS lng
+FROM PhillyHousing;
 
 
 
